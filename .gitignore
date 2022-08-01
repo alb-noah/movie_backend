@@ -6,7 +6,9 @@
 .DS_STORE
 
 build/*
-public/*
 node_modules
 
 !build/.gitignore
+
+public/uploads/*
+!public/uploads/movies

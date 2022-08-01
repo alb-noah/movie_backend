@@ -17,10 +17,12 @@ const config = {
     },
     migrations: {
         tableName: 'migrations',
-        directory: "Database/Migrations"
+        directory: "Database/Migrations",
+        stub: 'Database/migration.stub'
     },
     seeds: {
-        directory: "Database/Seeders"
+        directory: "Database/Seeders",
+        timestampFilenamePrefix: true
     }
 }
 
