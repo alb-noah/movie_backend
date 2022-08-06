@@ -22,6 +22,7 @@ when going through chapters remember to `npm install` as packages are introduced
 - [Chapter 2: Connecting Database](Documentation/Chapters/CHAPTER_2_CONNECTING_DATABASE.md)
 - [Chapter 3: Migrations & Seeders](Documentation/Chapters/CHAPTER_3_MIGRATIONS_AND_SEEDERS.md)
 - [Chapter 4: Dataset](Documentation/Chapters/CHAPTER_4_DATASET.md)
+- [Chapter 5: Models & Controllers](Documentation/Chapters/CHAPTER_5_MODELS_AND_CONTROLLERS.md)
 
 ## Setup
 
@@ -29,6 +30,7 @@ when going through chapters remember to `npm install` as packages are introduced
 2. `npm install`
 3. `knex migrate:latest`
 4. `knex seed:run`
+5. `npm run dev`
 
 ---
 
