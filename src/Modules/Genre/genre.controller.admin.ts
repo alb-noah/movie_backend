@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express"
-import Movie                               from './movie.model'
+import Genre                               from './genre.model'
 
-export const AdminMovieController = {
+export const AdminGenreController = {
 
     /**
      * ---------------------------------------------------------------------
@@ -10,9 +10,9 @@ export const AdminMovieController = {
      */
     index: async (req: Request, res: Response, next: NextFunction) => {
 
-        await Movie
+        await Genre
             .query()
-            .then((results: Movie[]) => res.json(results))
+            .then((results: Genre[]) => res.json(results))
             .catch(err => next(err))
     },
 
@@ -25,16 +25,11 @@ export const AdminMovieController = {
 
         const { id } = req.params
 
-        await Movie
+        return await Genre
             .query()
             .findById(id)
-            .withGraphFetched(`[
-                cast,
-                genres,
-                related_movies
-            ]`)
-            .throwIfNotFound({ message: 'Movie not found!' })
-            .then((result: Movie) => res.json(result))
+            .throwIfNotFound({ message: 'Genre not found!' })
+            .then((result: Genre) => res.json(result))
             .catch(err => next(err))
     },
 
@@ -42,7 +37,7 @@ export const AdminMovieController = {
 
         const data = req.body
 
-        await Movie
+        await Genre
             .query()
             .insert(data)
             .then((result) => res.json(result))
@@ -57,13 +52,14 @@ export const AdminMovieController = {
      */
     update: async (req: Request, res: Response, next: NextFunction) => {
 
-        const data = req.body
+        const data   = req.body
+        const { id } = req.params
 
-        await Movie
+        await Genre
             .query()
-            .patchAndFetchById(req.params.id, data)
-            .throwIfNotFound({ message: 'Movie not found!' })
-            .then((result: Movie) => res.json(result))
+            .patchAndFetchById(id, data)
+            .throwIfNotFound({ message: 'Genre not found!' })
+            .then((result) => res.json(result))
             .catch(err => next(err))
     },
 
@@ -76,11 +72,14 @@ export const AdminMovieController = {
 
         const { id } = req.params
 
-        await Movie
+        await Genre
             .query()
             .deleteById(id)
-            .throwIfNotFound({ message: 'Movie not found!' })
+            .throwIfNotFound({ message: 'Genre not found!' })
+            .returning('*')
             .then((result) => res.json(result))
             .catch(err => next(err))
+
     }
+
 }

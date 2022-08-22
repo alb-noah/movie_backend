@@ -1,5 +1,5 @@
-import {Model, QueryContext} from 'objection'
-import Movie                 from '../Movie/movie.model'
+import { Model, QueryContext } from 'objection'
+import Movie                   from '../Movie/movie.model'
 
 export default class Genre extends Model {
 
@@ -32,10 +32,30 @@ export default class Genre extends Model {
 
     async $afterGet(qc: QueryContext) {
 
-        let {lang} = qc
-        this.name  = lang ? this.name[lang] : this.name
+        let { lang } = qc
+        this.name    = lang ? this.name[lang] : this.name
 
         return super.$afterGet(qc)
+    }
+
+    /*
+     * ---------------------------------------------------------------------
+     * JSON SCHEMA
+     * ---------------------------------------------------------------------
+     */
+    static jsonSchema = {
+        type: 'object',
+        required: [ 'name' ],
+        properties: {
+            name: {
+                type: 'object',
+                required: [ 'en', 'ar' ],
+                properties: {
+                    en: { type: 'string' },
+                    ar: { type: 'string' }
+                }
+            }
+        }
     }
 
     /*

@@ -55,6 +55,14 @@ export default class Movie extends Model {
         return super.$afterGet(qc)
     }
 
+    static jsonSchema = {
+        type: 'object',
+        required: ['title'],
+        properties: {
+            title: {type: 'string', minLength: 3}
+        }
+    }
+
     /*
      * ---------------------------------------------------------------------
      * Model Relations

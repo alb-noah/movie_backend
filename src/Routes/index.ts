@@ -19,16 +19,17 @@ export const applyRoutes = (): Router => {
      * All application routes can go here
      * -------------------------------------------------------
      * */
-
-    const prefix = '' // TODO: can add general prefix to the router here as "/api/v1"
+    const prefix = '/api/v1'
 
     /**
      * ------------------------------------------------------------------------------
-     *  SUPERADMIN ROUTES
+     *  ADMIN ROUTES
      * ------------------------------------------------------------------------------
      */
     const admin_prefix = prefix + '/admin'
     // TODO: lock this route behind a Role Middleware (authorization)
+    AdminActorRoutes(router, admin_prefix)
+    AdminGenreRoutes(router, admin_prefix)
     AdminMovieRoutes(router, admin_prefix)
 
     /**
@@ -38,6 +39,8 @@ export const applyRoutes = (): Router => {
      */
 
     // insert any public middlewares above this line
+    PublicActorRoutes(router, prefix)
+    PublicGenreRoutes(router, prefix)
     PublicMovieRoutes(router, prefix)
 
     /**
