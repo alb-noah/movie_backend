@@ -7,7 +7,8 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "tsc": "tsc",
         "dev": "nodemon --watch \"src/**\" --ext \"ts,json\" --ignore \"src/**/*.spec.ts\" --exec ts-node \"src/index.ts\" ",
-        "build": "tsc"
+        "build": "tsc",
+        "try" : "ts-node src/Commands/try.ts"
     },
     "keywords": [],
     "author": "",

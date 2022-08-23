@@ -1,4 +1,5 @@
 import { QueryBuilder } from 'objection'
+import { knex }         from '../../knexfile'
 
 export class UtilDatabase {
 
@@ -6,9 +7,28 @@ export class UtilDatabase {
     // TODO: add filter
     // TODO: add include
 
+    static sort(columns: string[], sortString: string) {
+        let sorts = sortString.split(',')
+
+        let sortsArray: any = []
+
+        sorts.forEach((item: string) => {
+            let order  = item.startsWith('-') ? 'desc' : 'asc'
+            let column = item.toLowerCase()
+                             .replace('-', '')
+                             .replace(/ /g, '')
+
+            if (columns.includes(item)) {
+                sortsArray.push({ column, order })
+            }
+        })
+
+        return sortsArray
+    }
+
     static async finder(model: any, args: any, query: QueryBuilder<any>): Promise<any> {
 
-        let { lang, page, paginate } = args
+        let { lang, page, paginate, sorts } = args
 
         // pagination stuff
         let offset: number;
@@ -27,6 +47,14 @@ export class UtilDatabase {
             offset = page * paginate - paginate;
         }
 
+        let columns = await knex(model.tableName).columnInfo()
+
+        let sortsArray = [ { column: 'created_at' } ]
+
+        if (sorts)
+            sortsArray = this.sort(Object.keys(columns), sorts)
+
+        console.log(sortsArray)
         // Build the finder inquiry
 
         let inquiry = await query
@@ -36,6 +64,7 @@ export class UtilDatabase {
                 // if sorts
                 // search
             })
+            .orderBy(sortsArray)
             .page(page - 1, paginate)
 
         total              = inquiry.total
