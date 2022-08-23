@@ -1,6 +1,10 @@
-import {Router}                              from 'express'
-import {AdminMovieRoutes, PublicMovieRoutes} from '../Modules/Movie/movie.routes'
-import {errorHandler}                        from '../Middlewares/error.handler'
+import { Router }                              from 'express'
+import { errorHandler }                        from '../Middlewares/error.handler'
+import { Locale }                              from '../Middlewares/locale'
+import { AdminActorRoutes, PublicActorRoutes } from '../Modules/Actor/actor.routes'
+import { PublicAuthRoutes }                    from '../Modules/Auth/auth.routs'
+import { AdminGenreRoutes, PublicGenreRoutes } from '../Modules/Genre/genre.routes'
+import { AdminMovieRoutes, PublicMovieRoutes } from '../Modules/Movie/movie.routes'
 
 export const applyRoutes = (): Router => {
 
@@ -42,6 +46,7 @@ export const applyRoutes = (): Router => {
     PublicActorRoutes(router, prefix)
     PublicGenreRoutes(router, prefix)
     PublicMovieRoutes(router, prefix)
+    PublicAuthRoutes(router, prefix)
 
     /**
      * ------------------------------------------------------------------------------

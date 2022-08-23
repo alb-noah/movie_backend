@@ -1,5 +1,6 @@
 declare namespace Express {
     interface Request {
-        headers: any
+        headers: any,
+        role: string
     }
 }
