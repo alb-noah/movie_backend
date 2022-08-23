@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express"
+import { UtilDatabase }                    from '../../Utils/finder'
 import Genre                               from './genre.model'
 
 export const PublicGenreController = {
@@ -10,9 +11,11 @@ export const PublicGenreController = {
      */
     index: async (req: Request, res: Response, next: NextFunction) => {
 
-        await Genre
-            .query()
-            .then((results: Genre[]) => res.json(results))
+        let query = Genre.query()
+
+        return await UtilDatabase
+            .finder(Genre, req.query, query)
+            .then((results) => res.json(results))
             .catch(err => next(err))
     },
 

@@ -1,5 +1,6 @@
-import {NextFunction, Request, Response} from "express"
-import Actor                             from './actor.model'
+import { NextFunction, Request, Response } from "express"
+import { UtilDatabase }                    from '../../Utils/finder'
+import Actor                               from './actor.model'
 
 export const PublicActorController = {
 
@@ -10,9 +11,11 @@ export const PublicActorController = {
      */
     index: async (req: Request, res: Response, next: NextFunction) => {
 
-        await Actor
-            .query()
-            .then((results: Actor[]) => res.json(results))
+        let query = Actor.query()
+
+        return await UtilDatabase
+            .finder(Actor, req.query, query)
+            .then((results) => res.json(results))
             .catch(err => next(err))
     },
 
@@ -27,7 +30,7 @@ export const PublicActorController = {
             .query()
             .findById(req.params.id)
             .withGraphFetched(`[movies]`)
-            .throwIfNotFound({message: 'Actor not found!'})
+            .throwIfNotFound({ message: 'Actor not found!' })
             .then((result: Actor) => res.json(result))
             .catch(err => next(err))
     }

@@ -23,6 +23,7 @@ when going through chapters remember to `npm install` as packages are introduced
 - [Chapter 3: Migrations & Seeders](Documentation/Chapters/CHAPTER_3_MIGRATIONS_AND_SEEDERS.md)
 - [Chapter 4: Dataset](Documentation/Chapters/CHAPTER_4_DATASET.md)
 - [Chapter 5: Models & Controllers](Documentation/Chapters/CHAPTER_5_MODELS_AND_CONTROLLERS.md)
+- [Chapter 6: Express Core](Documentation/Chapters/CHAPTER_6_EXPRESS_CORE.md)
 
 ## Setup
 

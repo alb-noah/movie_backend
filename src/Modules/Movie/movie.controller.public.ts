@@ -1,4 +1,5 @@
 import {NextFunction, Request, Response} from "express"
+import { UtilDatabase }                  from '../../Utils/finder'
 import Movie                             from './movie.model'
 
 export const PublicMovieController = {
@@ -10,10 +11,13 @@ export const PublicMovieController = {
      */
     index: async (req: Request, res: Response, next: NextFunction) => {
 
-        await Movie
+        let query = Movie
             .query()
             .modify('enabled')
-            .then((results: Movie[]) => res.json(results))
+
+        return await UtilDatabase
+            .finder(Movie, req.query, query)
+            .then((results) => res.json(results))
             .catch(err => next(err))
     },
 
