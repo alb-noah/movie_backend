@@ -1,7 +1,8 @@
 import { Model, QueryContext } from 'objection'
 import Movie                   from '../Movie/movie.model'
+import { TimestampedModel }    from '../Shared/TimestampedModel'
 
-export default class Genre extends Model {
+export default class Genre extends TimestampedModel {
 
     // Table name
     static tableName = 'genres'
@@ -9,26 +10,12 @@ export default class Genre extends Model {
     // Table columns
     id!: string
     name!: string
-    created_at!: Date | string
-    updated_at!: Date | string
 
     /*
      * ---------------------------------------------------------------------
      * Static methods
      * ---------------------------------------------------------------------
      */
-    async $beforeInsert(qc: QueryContext) {
-        this.created_at = new Date()
-        this.updated_at = new Date()
-
-        return super.$beforeInsert(qc)
-    }
-
-    async $beforeUpdate(_args: any, qc: QueryContext) {
-        this.updated_at = new Date()
-
-        return super.$beforeUpdate(_args, qc)
-    }
 
     async $afterGet(qc: QueryContext) {
 

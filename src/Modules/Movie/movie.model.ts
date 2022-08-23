@@ -2,8 +2,9 @@ import {Model, QueryBuilderType, QueryContext} from 'objection'
 import {DOMAIN}                                from "../../config"
 import Actor                                   from '../Actor/actor.model'
 import Genre                                   from '../Genre/genre.model'
+import { TimestampedModel }                    from '../Shared/TimestampedModel'
 
-export default class Movie extends Model {
+export default class Movie extends TimestampedModel {
 
     // Table name
     static tableName = 'movies'
@@ -21,26 +22,12 @@ export default class Movie extends Model {
     rental_duration!: string
     damage_cost!: number
     is_disabled!: boolean
-    created_at!: Date | string
-    updated_at!: Date | string
 
     /*
      * ---------------------------------------------------------------------
      * Static methods
      * ---------------------------------------------------------------------
      */
-    async $beforeInsert(qc: QueryContext) {
-        this.created_at = new Date()
-        this.updated_at = new Date()
-
-        return super.$beforeInsert(qc)
-    }
-
-    async $beforeUpdate(args: any, qc: QueryContext) {
-        this.updated_at = new Date()
-
-        return super.$beforeUpdate(args, qc)
-    }
 
     async $afterGet(qc: QueryContext) {
 

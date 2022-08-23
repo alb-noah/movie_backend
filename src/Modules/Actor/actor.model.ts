@@ -1,8 +1,9 @@
 import {Model, QueryBuilderType, QueryContext} from 'objection'
 import {DOMAIN}                                from "../../config"
 import Movie                                   from '../Movie/movie.model'
+import { TimestampedModel }                    from '../Shared/TimestampedModel'
 
-export default class Actor extends Model {
+export default class Actor extends TimestampedModel {
 
     // Table name
     static tableName = 'actors'
@@ -12,26 +13,6 @@ export default class Actor extends Model {
     name!: string | null
     img!: string | null
     thumb!: string | null
-    created_at!: Date | string
-    updated_at!: Date | string
-
-    /*
-     * ---------------------------------------------------------------------
-     * Static methods
-     * ---------------------------------------------------------------------
-     */
-    async $beforeInsert(qc: QueryContext) {
-        this.created_at = new Date()
-        this.updated_at = new Date()
-
-        return super.$beforeInsert(qc)
-    }
-
-    async $beforeUpdate(args: any, qc: QueryContext) {
-        this.updated_at = new Date()
-
-        return super.$beforeUpdate(args, qc)
-    }
 
     async $afterGet(qc: QueryContext) {
 
