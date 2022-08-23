@@ -18,6 +18,7 @@ export const applyRoutes = (): Router => {
      * */
     // TODO: add (authentication) and locale middlewares here
 
+    router.use(Locale)
     /**
      * -------------------------------------------------------
      * All application routes can go here

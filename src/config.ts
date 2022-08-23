@@ -13,3 +13,8 @@ export const DB = {
     password: process.env.PG_PASSWORD,
     database: process.env.PG_DATABASE
 }
+
+export const LOCALES_ENUM = [
+    'ar',
+    'en'
+]
