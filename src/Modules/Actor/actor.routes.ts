@@ -13,7 +13,7 @@ export const AdminActorRoutes = (router: Router, prefix: string) => {
     // TODO: add insert, update and delete to admin
 
     router
-        .route(`${ prefix }/actors`)
+        .route(`${ prefix }/actors`)  // domain:8000/api/v1/admin/actors
         .get(
             PublicActorController.index
         )
@@ -23,7 +23,7 @@ export const AdminActorRoutes = (router: Router, prefix: string) => {
         )
 
     router
-        .route(`${ prefix }/actors/:id`)
+        .route(`${ prefix }/actors/:id`) // domain:8000/api/v1/admin/actors/1
         .get(
             PublicActorController.show
         )

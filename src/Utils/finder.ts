@@ -3,9 +3,56 @@ import { knex }         from '../../knexfile'
 
 export class UtilDatabase {
 
-    // TODO: add sort
-    // TODO: add filter
     // TODO: add include
+
+    static filter(columns: string[], filterString: string) {
+
+        let filtersArray: any = []
+
+        let filters: any = filterString.split(',')
+
+        filters.forEach((filter: string) => {
+
+            let [ criteria, op, value ] = filter.split(':', 3)
+
+            if (criteria && op && value) {
+
+                criteria = criteria.toLowerCase()
+                               .replace(/ /g, '')
+                value  = value.replace(/ /g, '')
+
+                switch (op) {
+                    case 'eq':
+                        op = '=';
+                        break;
+                    case 'nq':
+                        op = '!=';
+                        break;
+                    case 'gt':
+                        op = '>';
+                        break;
+                    case 'gte':
+                        op = '>=';
+                        break;
+                    case 'lt':
+                        op = '<';
+                        break;
+                    case 'lte':
+                        op = '<=';
+                        break;
+                    default:
+                        op = '=';
+                        break;
+                }
+
+                if (columns.includes(criteria))
+                    filtersArray.push({ criteria, op, value })
+
+            }
+        })
+
+        return filtersArray
+    }
 
     static sort(columns: string[], sortString: string) {
         let sorts = sortString.split(',')
@@ -18,7 +65,7 @@ export class UtilDatabase {
                              .replace('-', '')
                              .replace(/ /g, '')
 
-            if (columns.includes(item)) {
+            if (columns.includes(column)) {
                 sortsArray.push({ column, order })
             }
         })
@@ -28,7 +75,7 @@ export class UtilDatabase {
 
     static async finder(model: any, args: any, query: QueryBuilder<any>): Promise<any> {
 
-        let { lang, page, paginate, sorts } = args
+        let { lang, page, paginate, sorts, filters } = args
 
         // pagination stuff
         let offset: number;
@@ -49,20 +96,31 @@ export class UtilDatabase {
 
         let columns = await knex(model.tableName).columnInfo()
 
-        let sortsArray = [ { column: 'created_at' } ]
+        let filtersArray: any = []
+        let sortsArray        = [ { column: 'created_at' } ]
 
         if (sorts)
             sortsArray = this.sort(Object.keys(columns), sorts)
 
+        if (filters)
+            filtersArray = this.filter(Object.keys(columns), filters)
+
         console.log(sortsArray)
+        console.log(filtersArray)
         // Build the finder inquiry
 
         let inquiry = await query
             .context({ lang })
             .modify(qb => {
-                // if filters
-                // if sorts
                 // search
+                if (filtersArray.length > 0) {
+                    filtersArray.forEach(filter => {
+                        let { criteria, op, value } = filter
+                        console.log('inside finder: { criteria, op, value }')
+                        console.log({ criteria, op, value })
+                        qb.where(criteria, op, value)
+                    })
+                }
             })
             .orderBy(sortsArray)
             .page(page - 1, paginate)

@@ -31,7 +31,7 @@ export const applyRoutes = (): Router => {
      *  ADMIN ROUTES
      * ------------------------------------------------------------------------------
      */
-    const admin_prefix = prefix + '/admin'
+    const admin_prefix = prefix + '/admin' // domain:8000/api/v1/admin
     // TODO: lock this route behind a Role Middleware (authorization)
     AdminActorRoutes(router, admin_prefix)
     AdminGenreRoutes(router, admin_prefix)
@@ -42,7 +42,7 @@ export const applyRoutes = (): Router => {
      *  PUBLIC ROUTES
      * ------------------------------------------------------------------------------
      */
-
+    // domain:8000/api/v1
     // insert any public middlewares above this line
     PublicActorRoutes(router, prefix)
     PublicGenreRoutes(router, prefix)
