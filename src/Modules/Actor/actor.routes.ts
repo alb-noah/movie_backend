@@ -18,7 +18,7 @@ export const AdminActorRoutes = (router: Router, prefix: string) => {
             PublicActorController.index
         )
         .post(
-            Multer.none,
+            Multer.simple('actors'),
             AdminActorController.store
         )
 

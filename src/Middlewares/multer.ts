@@ -1,7 +1,7 @@
-import path              from "path"
-import multer            from "multer"
-import {ValidationError} from "objection"
-import { UPLOADS_PATH }  from '../config'
+import path                from "path"
+import multer              from "multer"
+import { ValidationError } from "objection"
+import { UPLOADS_PATH }    from '../config'
 
 export class Multer {
 
@@ -12,6 +12,20 @@ export class Multer {
      */
     static none = multer().none()
 
+    static simple = (tableName: string) => {
+
+        const storage = multer.diskStorage({
+            destination: (req, file, next) => {
+                next(null, path.resolve(UPLOADS_PATH, tableName));
+            },
+            filename: (req, file, next) => {
+                let filename = tableName + '_' + Date.now() + '_' + Math.round(Math.random() * 1E9) + path.extname(file.originalname)
+                next(null, filename);
+            }
+        })
+
+        return multer({storage}).single('img')
+    }
     /**
      * ---------------------------------------------------------------------
      * Single File POST upload
@@ -30,7 +44,7 @@ export class Multer {
 
         return multer({
             storage,
-            limits: {fileSize: 8000000},
+            limits: { fileSize: 8000000 },
             async fileFilter(req: Express.Request, file: Express.Multer.File, next: multer.FileFilterCallback) {
 
                 let maxFileSize      = 8000000

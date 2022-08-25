@@ -27,6 +27,14 @@ export default class Actor extends TimestampedModel {
         return super.$afterGet(qc)
     }
 
+
+    static jsonSchema = {
+        type: 'object',
+        required: ['name'],
+        properties: {
+            name: {type: 'string', minLength: 3}
+        }
+    }
     /*
      * ---------------------------------------------------------------------
      * Model Relations

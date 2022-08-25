@@ -22,6 +22,7 @@ export default class Movie extends TimestampedModel {
     rental_duration!: string
     damage_cost!: number
     is_disabled!: boolean
+    fulltext!: string
 
     /*
      * ---------------------------------------------------------------------
