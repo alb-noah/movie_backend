@@ -8,9 +8,7 @@ export const Locale = (req: Request, res: Response, next: NextFunction) => {
                'ar'
 
     if (!LOCALES_ENUM.includes(lang))
-        lang = 'ar'
+        req.query.lang = 'ar'
 
-    // req.lang = lang as Language
-    console.log(lang)
     next()
 }

@@ -18,8 +18,8 @@ export class UtilDatabase {
             if (criteria && op && value) {
 
                 criteria = criteria.toLowerCase()
-                               .replace(/ /g, '')
-                value  = value.replace(/ /g, '')
+                                   .replace(/ /g, '')
+                value    = value.replace(/ /g, '')
 
                 switch (op) {
                     case 'eq':
@@ -75,7 +75,11 @@ export class UtilDatabase {
 
     static async finder(model: any, args: any, query: QueryBuilder<any>): Promise<any> {
 
-        let { lang, page, paginate, sorts, filters } = args
+        let { q, lang, page, paginate, sorts, filters } = args
+
+        if (q != undefined) {
+            q = q.trim().replace(';')
+        }
 
         // pagination stuff
         let offset: number;
@@ -94,25 +98,25 @@ export class UtilDatabase {
             offset = page * paginate - paginate;
         }
 
-        let columns = await knex(model.tableName).columnInfo()
+        let columns = await knex(model.tableName)
+            .columnInfo()
+            .then(c => Object.keys(c))
 
         let filtersArray: any = []
         let sortsArray        = [ { column: 'created_at' } ]
 
         if (sorts)
-            sortsArray = this.sort(Object.keys(columns), sorts)
+            sortsArray = this.sort(columns, sorts)
 
         if (filters)
-            filtersArray = this.filter(Object.keys(columns), filters)
+            filtersArray = this.filter(columns, filters)
 
-        console.log(sortsArray)
-        console.log(filtersArray)
         // Build the finder inquiry
-
         let inquiry = await query
             .context({ lang })
             .modify(qb => {
-                // search
+
+                // filter
                 if (filtersArray.length > 0) {
                     filtersArray.forEach(filter => {
                         let { criteria, op, value } = filter
@@ -121,6 +125,23 @@ export class UtilDatabase {
                         qb.where(criteria, op, value)
                     })
                 }
+                // search
+
+                if (q) {
+                    if (columns.includes('fulltext')) {
+                        console.log("columns.includes('fulltext')")
+                        console.log(columns.includes('fulltext'))
+                        qb.whereRaw('fulltext @@ to_tsquery(?)', [ q ])
+                    } else {
+
+                        if (model.tableName == 'movies')
+                            qb.where('name', 'ilike', `%${ q }%`)
+
+                        if (model.tableName == 'genres')
+                            qb.whereRaw(`name->>'${ lang }' ilike ?`, [ `%${ q }%` ])
+                    }
+                }
+
             })
             .orderBy(sortsArray)
             .page(page - 1, paginate)
