@@ -1,0 +1,10 @@
+/node_modules
+/build
+/Documentation
+/art
+/.git
+/.idea
+*.md
+Dockerfile
+.dockerignore
+docker-compose.yml

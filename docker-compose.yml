@@ -1,0 +1,29 @@
+version: '2'
+
+networks:
+  sadeem:
+    external: true
+
+services:
+  smdb:
+    container_name: smdb
+    image: sadeem/smdb:v1.0
+    restart: always
+    depends_on:
+      - postgres
+      - nginx
+    networks:
+      - sadeem
+    expose:
+      - '8022'
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - /home/smdb
+      - /home/smdb/node_modules
+      - .env:/home/smdb/.env
+      - ./logs:/home/smdb/logs
+      - ./public:/home/smdb/public
+      - ./private:/home/smdb/private
+      - ./json_google:/home/smdb/json_google
