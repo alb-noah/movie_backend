@@ -135,7 +135,7 @@ export class UtilDatabase {
                     } else {
 
                         if (model.tableName == 'movies')
-                            qb.where('name', 'ilike', `%${ q }%`)
+                            qb.where('title', 'ilike', `%${ q }%`)
 
                         if (model.tableName == 'genres')
                             qb.whereRaw(`name->>'${ lang }' ilike ?`, [ `%${ q }%` ])
