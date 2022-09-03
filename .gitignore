@@ -13,3 +13,5 @@ node_modules
 public/uploads/*
 !public/uploads/movies
 !public/uploads/actors
+!public/uploads/movies.zip
+!public/uploads/actors.zip

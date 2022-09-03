@@ -68,7 +68,7 @@ export default class Movie extends TimestampedModel {
                 },
                 to: 'actors.id'
             },
-            filter: (qb: QueryBuilderType<Actor>) => qb.select('actors.id', 'actors.name')
+            filter: (qb: QueryBuilderType<Actor>) => qb.select('actors.id', 'actors.name', 'actors.img', 'actors.thumb')
         },
         genres: {
             relation: Model.ManyToManyRelation,

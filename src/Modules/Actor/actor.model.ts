@@ -1,7 +1,7 @@
-import {Model, QueryBuilderType, QueryContext} from 'objection'
-import {DOMAIN}                                from "../../config"
-import Movie                                   from '../Movie/movie.model'
-import { TimestampedModel }                    from '../Shared/TimestampedModel'
+import Objection, { Model, QueryBuilderType } from 'objection'
+import { DOMAIN }                             from "../../config"
+import Movie                                  from '../Movie/movie.model'
+import { TimestampedModel }                   from '../Shared/TimestampedModel'
 
 export default class Actor extends TimestampedModel {
 
@@ -14,27 +14,22 @@ export default class Actor extends TimestampedModel {
     img!: string | null
     thumb!: string | null
 
-    async $afterGet(qc: QueryContext) {
-
-        this.img = this.img ?
-                   `${DOMAIN}/uploads/actors/${this.img}` :
-                   null
-
-        this.thumb = this.thumb ?
-                     `${DOMAIN}/uploads/actors/thumbs/${this.thumb}` :
-                     null
-
-        return super.$afterGet(qc)
-    }
-
-
     static jsonSchema = {
         type: 'object',
-        required: ['name'],
+        required: [ 'name' ],
         properties: {
-            name: {type: 'string', minLength: 3}
+            name: { type: 'string', minLength: 3 }
         }
     }
+
+    // Formats img and thumb fields when existing model value returns from database
+    $parseDatabaseJson(json: Objection.Pojo): Objection.Pojo {
+        json       = super.$parseDatabaseJson(json);
+        json.img   = json.img != null ? `${ DOMAIN }/uploads/actors/${ json.img }` : null
+        json.thumb = json.thumb != null ? `${ DOMAIN }/uploads/actors/thumbs/${ json.thumb }` : null
+        return json
+    }
+
     /*
      * ---------------------------------------------------------------------
      * Model Relations
@@ -49,7 +44,7 @@ export default class Actor extends TimestampedModel {
                 through: {
                     from: 'movie_actors.actor_id',
                     to: 'movie_actors.movie_id',
-                    extra: ['as']
+                    extra: [ 'as' ]
                 },
                 to: 'movies.id'
             },
