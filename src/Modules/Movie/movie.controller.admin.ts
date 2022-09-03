@@ -27,9 +27,12 @@ export const AdminMovieController = {
     show: async (req: Request, res: Response, next: NextFunction) => {
 
         const { id } = req.params
+        let lang = req.query.lang
+
 
         await Movie
             .query()
+            .context({lang})
             .findById(id)
             .withGraphFetched(`[
                 cast,

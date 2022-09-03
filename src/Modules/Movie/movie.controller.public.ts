@@ -28,8 +28,11 @@ export const PublicMovieController = {
      */
     show: async (req: Request, res: Response, next: NextFunction) => {
 
+        let lang = req.query.lang
+
         await Movie
             .query()
+            .context({lang})
             .findById(req.params.id)
             .modify('enabled')
             .withGraphFetched(`[
