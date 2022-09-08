@@ -7,8 +7,8 @@ export const CORS_ORIGIN = [
     "http://127.0.0.1",
     "http://smdb.sadeem-lab.com",
     "https://smdb.sadeem-lab.com",
-    "https://smdb-dc643.web.app/",
-    "https://smdb-dc643-staging.web.app/",
+    "https://smdb-dc643.web.app",
+    "https://smdb-dc643-staging.web.app",
 ]
 
 export const ROOT_PATH    = path.resolve(__dirname, '../')
