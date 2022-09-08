@@ -1,9 +1,7 @@
 import {Knex} from "knex";
 
-const table_name = 'table'
-
 export async function up(knex: Knex): Promise<void> {
-    return knex.schema.createTable(table_name, (table) => {
+    return knex.schema.createTable('table', (table) => {
         table.increments('id', {primaryKey: true})
         table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'))
         table.string('name').nullable()
@@ -15,6 +13,6 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
-    return knex.schema.dropTableIfExists(table_name)
+    return knex.schema.dropTableIfExists('table')
 }
 

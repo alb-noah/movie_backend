@@ -1,5 +1,6 @@
 import { Router }                              from 'express'
 import { errorHandler }                        from '../Middlewares/error.handler'
+import { JWT }                                 from '../Middlewares/Jwt'
 import { Locale }                              from '../Middlewares/locale'
 import { AdminActorRoutes, PublicActorRoutes } from '../Modules/Actor/actor.routes'
 import { PublicAuthRoutes }                    from '../Modules/Auth/auth.routs'
@@ -19,6 +20,8 @@ export const applyRoutes = (): Router => {
     // TODO: add (authentication) and locale middlewares here
 
     router.use(Locale)
+    router.use(JWT)
+
     /**
      * -------------------------------------------------------
      * All application routes can go here
