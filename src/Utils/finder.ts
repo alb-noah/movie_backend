@@ -129,6 +129,9 @@ export class UtilDatabase {
 
                 if (q) {
                     if (columns.includes('fulltext')) {
+
+                        q = q.split(' ').join('+') + ":*"
+                        console.log(q)
                         console.log("columns.includes('fulltext')")
                         console.log(columns.includes('fulltext'))
                         qb.whereRaw('fulltext @@ to_tsquery(?)', [ q ])
@@ -136,6 +139,9 @@ export class UtilDatabase {
 
                         if (model.tableName == 'movies')
                             qb.where('title', 'ilike', `%${ q }%`)
+
+                        if (model.tableName == 'actors')
+                            qb.where('name', 'ilike', `%${ q }%`)
 
                         if (model.tableName == 'genres')
                             qb.whereRaw(`name->>'${ lang }' ilike ?`, [ `%${ q }%` ])
