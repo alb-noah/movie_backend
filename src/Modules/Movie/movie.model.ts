@@ -8,6 +8,7 @@ export default class Movie extends TimestampedModel {
 
     // Table name
     static tableName = 'movies'
+    static defaultSort = 'title'
 
     // Table columns
     id!: string

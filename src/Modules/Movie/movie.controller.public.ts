@@ -14,6 +14,7 @@ export const PublicMovieController = {
         let query = Movie
             .query()
             .modify('enabled')
+            .withGraphFetched(`[genres]`)
 
         return await UtilDatabase
             .finder(Movie, req.query, query)
@@ -35,11 +36,7 @@ export const PublicMovieController = {
             .context({lang})
             .findById(req.params.id)
             .modify('enabled')
-            .withGraphFetched(`[
-                cast,
-                genres,
-                related_movies
-            ]`)
+            .withGraphFetched(`[cast,genres,related_movies]`)
             .throwIfNotFound({message: 'Movie not found!'})
             .then((result: Movie) => res.json(result))
             .catch(err => next(err))

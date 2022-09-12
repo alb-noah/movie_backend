@@ -7,6 +7,7 @@ export default class Actor extends TimestampedModel {
 
     // Table name
     static tableName = 'actors'
+    static defaultSort = 'name'
 
     // Table columns
     id!: string

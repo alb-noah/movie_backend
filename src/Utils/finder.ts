@@ -3,9 +3,7 @@ import { knex }         from '../../knexfile'
 
 export class UtilDatabase {
 
-    // TODO: add include
-
-    static filter(columns: string[], filterString: string) {
+    static filter(columns: string[], relations: string[], filterString: string) {
 
         let filtersArray: any = []
 
@@ -45,7 +43,7 @@ export class UtilDatabase {
                         break;
                 }
 
-                if (columns.includes(criteria))
+                if (columns.concat(relations).includes(criteria))
                     filtersArray.push({ criteria, op, value })
 
             }
@@ -102,6 +100,8 @@ export class UtilDatabase {
             .columnInfo()
             .then(c => Object.keys(c))
 
+        let relations = Object.keys(model.getRelations())
+
         let filtersArray: any = []
         let sortsArray        = [ { column: 'created_at' } ]
 
@@ -109,7 +109,7 @@ export class UtilDatabase {
             sortsArray = this.sort(columns, sorts)
 
         if (filters)
-            filtersArray = this.filter(columns, filters)
+            filtersArray = this.filter(columns, relations, filters)
 
         // Build the finder inquiry
         let inquiry = await query
@@ -120,9 +120,14 @@ export class UtilDatabase {
                 if (filtersArray.length > 0) {
                     filtersArray.forEach(filter => {
                         let { criteria, op, value } = filter
-                        console.log('inside finder: { criteria, op, value }')
-                        console.log({ criteria, op, value })
-                        qb.where(criteria, op, value)
+                        // console.log('inside finder: { criteria, op, value }')
+                        // console.log({ criteria, op, value })
+                        if (relations.includes(criteria)) {
+                            qb.joinRelated(criteria)
+                              .where(`${ criteria }.id`, op, value)
+                        } else {
+                            qb.where(criteria, op, value)
+                        }
                     })
                 }
                 // search
@@ -137,17 +142,13 @@ export class UtilDatabase {
                         qb.whereRaw('fulltext @@ to_tsquery(?)', [ q ])
                     } else {
 
-                        if (model.tableName == 'movies')
-                            qb.where('title', 'ilike', `%${ q }%`)
-
-                        if (model.tableName == 'actors')
-                            qb.where('name', 'ilike', `%${ q }%`)
-
-                        if (model.tableName == 'genres')
+                        if (model.tableName == 'genres') {
                             qb.whereRaw(`name->>'${ lang }' ilike ?`, [ `%${ q }%` ])
+                        } else {
+                            qb.where(model.defaultSort, 'ilike', `%${ q }%`)
+                        }
                     }
                 }
-
             })
             .orderBy(sortsArray)
             .page(page - 1, paginate)
@@ -169,6 +170,8 @@ export class UtilDatabase {
                 last_page: lastPage,
                 from,
                 to,
+                columns,
+                relations,
                 page_sizes: [ 12, 24, 50 ]
             },
             data: inquiry.results

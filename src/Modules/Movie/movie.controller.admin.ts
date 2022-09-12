@@ -11,7 +11,9 @@ export const AdminMovieController = {
      */
     index: async (req: Request, res: Response, next: NextFunction) => {
 
-        let query = Movie.query()
+        let query = Movie
+            .query()
+            .withGraphFetched(`[genres]`)
 
         return await UtilDatabase
             .finder(Movie, req.query, query)
@@ -27,12 +29,12 @@ export const AdminMovieController = {
     show: async (req: Request, res: Response, next: NextFunction) => {
 
         const { id } = req.params
-        let lang = req.query.lang
+        let lang     = req.query.lang
 
 
         await Movie
             .query()
-            .context({lang})
+            .context({ lang })
             .findById(id)
             .withGraphFetched(`[
                 cast,
