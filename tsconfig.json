@@ -13,7 +13,7 @@
         "outDir": "./build",
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
-        "strict": true,
+        "strict": false,
         "noImplicitAny": false,
         "skipDefaultLibCheck": true,
         "skipLibCheck": true

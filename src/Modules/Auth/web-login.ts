@@ -17,7 +17,6 @@ export const webLogin = async (req: Request, res: Response, next: NextFunction) 
         .throwIfNotFound({ message: "User not found" })
         .then(async (result) => {
             const valid = await result.$validatePassword(password)
-
             const generated = result.$genToken()
             const token     = `Bearer ${ generated }`
             if (valid) {

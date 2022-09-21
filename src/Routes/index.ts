@@ -36,6 +36,7 @@ export const applyRoutes = (): Router => {
      */
     const admin_prefix = prefix + '/admin' // domain:8000/api/v1/admin
     // TODO: lock this route behind a Role Middleware (authorization)
+
     AdminActorRoutes(router, admin_prefix)
     AdminGenreRoutes(router, admin_prefix)
     AdminMovieRoutes(router, admin_prefix)
@@ -46,11 +47,21 @@ export const applyRoutes = (): Router => {
      * ------------------------------------------------------------------------------
      */
     // domain:8000/api/v1
+    const actors_prefix = prefix + '/actors'
+    const genre_prefix = prefix + '/genre'
+    const  movies_prefix = prefix + '/movies'
+    const login_prefix = prefix + '/login'
+    const  web_login_prefix = prefix + '/web-login'
+    const register_prefix = prefix + '/register'
+
+
     // insert any public middlewares above this line
-    PublicActorRoutes(router, prefix)
-    PublicGenreRoutes(router, prefix)
-    PublicMovieRoutes(router, prefix)
-    PublicAuthRoutes(router, prefix)
+    PublicActorRoutes(router, actors_prefix)
+    PublicGenreRoutes(router, genre_prefix)
+    PublicMovieRoutes(router, movies_prefix)
+    PublicAuthRoutes(router, login_prefix)
+    PublicAuthRoutes(router, web_login_prefix)
+    PublicAuthRoutes(router, register_prefix)
 
     /**
      * ------------------------------------------------------------------------------
@@ -58,6 +69,6 @@ export const applyRoutes = (): Router => {
      * ------------------------------------------------------------------------------
      * */
     router.use(errorHandler)
-
+    module.exports = router;
     return router
 }

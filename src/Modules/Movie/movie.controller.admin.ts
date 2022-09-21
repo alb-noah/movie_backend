@@ -3,7 +3,6 @@ import { UtilDatabase }                    from '../../Utils/finder'
 import Movie                               from './movie.model'
 
 export const AdminMovieController = {
-
     /**
      * ---------------------------------------------------------------------
      * View index of a model
