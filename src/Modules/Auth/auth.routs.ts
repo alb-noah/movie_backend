@@ -4,15 +4,17 @@ import { Multer }   from '../../Middlewares/multer'
 import { logout }   from './logout'
 import { me }       from './me'
 import { webLogin } from './web-login'
-import {knex} from "../../../knexfile";
-const jwtGenerator = require('../../Utils/jwtGenerator')
+import {knex} from "../../../knexfile"
+const jwtGenerator = require('../../Utils/jwtGenerator');
+const validInfo = require('../../Middlewares/validInfo');
+const authorrization = require('../../Middlewares/authorization');
 
 
 export const PublicAuthRoutes = (router: Router, prefix: string) => {
 
     router.post(
         `${ prefix }/register`,
-        async (req,res) => {
+        validInfo , async (req,res) => {
             try {
                 const {name, email, password,age} = req.body;
                 const user = await knex.raw("SELECT * FROM users WHERE email=$1",
@@ -41,7 +43,7 @@ export const PublicAuthRoutes = (router: Router, prefix: string) => {
 
     router.post(
         `${ prefix }/web-login`,
-        async (req,res) =>{
+        validInfo ,async (req,res) =>{
             try{
                 const {email,password} = req.body;
                 const user = await knex.raw("SELECT * FROM users where user =$1",[email]);
@@ -71,7 +73,15 @@ export const PublicAuthRoutes = (router: Router, prefix: string) => {
 
     );
 
-    router.get(`${ prefix }/me`, me)
+    router.get(`${ prefix }/me`, authorrization,
+        async (req,res) =>{
+            try{
+                res.json(true)
+            } catch (e){
+                console.error(e.message);
+                res.status(500).send("Server Error");
+            }
+        }, me)
 
     router.get(`${ prefix }/logout`, logout)
 
