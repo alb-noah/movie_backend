@@ -2,9 +2,9 @@ import 'dotenv/config'
 import Knex from "knex"
 import {DB} from "./src/config"
 
-const Pool = require("pg").Pool;
+//const Pool = require("pg").Pool;
 
- export const  pool = new Pool({
+  const  config = {
     client: DB.client,
     connection: {
         host: DB.host,
@@ -26,7 +26,7 @@ const Pool = require("pg").Pool;
         directory: "Database/Seeders",
         timestampFilenamePrefix: true
     }
-});
+}
 
-export const knex = Knex(pool);
-module.exports = pool
+export const knex = Knex(config);
+module.exports = config

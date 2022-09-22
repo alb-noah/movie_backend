@@ -115,7 +115,7 @@
     ```bash
     λ npm run tsc && node build/index.js
     
-    > summer-internship-backend@1.0.0 tsc
+    > movie_backendd@1.0.0 tsc
     > tsc
     
     Server listening at http://localhost:8000

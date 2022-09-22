@@ -56,12 +56,12 @@ export const applyRoutes = (): Router => {
 
 
     // insert any public middlewares above this line
-    PublicActorRoutes(router, actors_prefix)
-    PublicGenreRoutes(router, genre_prefix)
-    PublicMovieRoutes(router, movies_prefix)
-    PublicAuthRoutes(router, login_prefix)
-    PublicAuthRoutes(router, web_login_prefix)
-    PublicAuthRoutes(router, register_prefix)
+    PublicActorRoutes(router, prefix)
+    PublicGenreRoutes(router, prefix)
+    PublicMovieRoutes(router, prefix)
+    PublicAuthRoutes(router, prefix)
+    PublicAuthRoutes(router, prefix)
+    PublicAuthRoutes(router, prefix)
 
     /**
      * ------------------------------------------------------------------------------

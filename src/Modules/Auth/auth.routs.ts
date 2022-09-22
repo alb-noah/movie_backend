@@ -4,13 +4,9 @@ import { Multer }   from '../../Middlewares/multer'
 import { logout }   from './logout'
 import { me }       from './me'
 import { webLogin } from './web-login'
+import {knex} from "../../../knexfile";
 const jwtGenerator = require('../../Utils/jwtGenerator')
-//import {register} from "./register";
-import { Pool } from 'pg';
-import {DB} from "../../config";
-import {config} from "dotenv";
-import {pool} from "../../../knexfile";
-import {genSalt} from "bcryptjs";
+
 
 export const PublicAuthRoutes = (router: Router, prefix: string) => {
 
@@ -18,8 +14,8 @@ export const PublicAuthRoutes = (router: Router, prefix: string) => {
         `${ prefix }/register`,
         async (req,res) => {
             try {
-                const {name, email, password} = req.body;
-                const user = await pool.query("SELECT * FROM users WHERE email=$1",
+                const {name, email, password,age} = req.body;
+                const user = await knex.raw("SELECT * FROM users WHERE email=$1",
                     [email]);
                 if(user.rows.length !== 0){
                     return res.status(401).send("المستخدم موجود");
@@ -28,39 +24,55 @@ export const PublicAuthRoutes = (router: Router, prefix: string) => {
                 const salt = await bcrypt.genSalt(saltRound);
                 const bcryptPassword = await bcrypt.hash(password, salt);
 
-                const newUser = await pool.query(
-                    "INSERT INTO users (name, email, password) VALUES ($1,$2,$3) RETURNING *",
-                    [name, email, bcryptPassword]
+                const newUser = await knex.raw(
+                    "INSERT INTO users (name, email, password,age) VALUES ($1,$2,$3,$4) RETURNING *",
+                    [name, email, bcryptPassword,age]
                 );
                 res.json(newUser.rows[0]);
 
                 const token = jwtGenerator(newUser.rows[0].id);
-                res.json(token);
+                res.json({token});
 
             } catch (err){
                console.error(err.message);
                res.status(500).send("server error");
             }
-
         });
 
     router.post(
         `${ prefix }/web-login`,
+        async (req,res) =>{
+            try{
+                const {email,password} = req.body;
+                const user = await knex.raw("SELECT * FROM users where user =$1",[email]);
+
+                if(user.rows.length === 0){
+                    return res.status(401).json("خطأ في الايميل او الباسوورد");
+                }
+
+                const validPassword = await bcrypt.compare(password, user.rows[0].password);
+
+                if (!validPassword){
+                    return res.status(401).json("البريد او كلمة السر خاطئة");
+
+                }
+
+                const token = jwtGenerator(user.rows[0].id);
+                res.json({token});
+
+            } catch (e){
+                console.error(e.message);
+                res.status(500).send("Server Error");
+
+            }
+        },
         Multer.none,
         webLogin
-    )
+
+    );
 
     router.get(`${ prefix }/me`, me)
 
     router.get(`${ prefix }/logout`, logout)
 
-    // router.post(
-    //     `${ prefix }/register`,
-    //     // Multer.none,async (req,res) =>{
-    //     //     const {name,email,phone, password,birthOfDate} = req.body;
-    //     //     try{
-    //     //         //const user = await Pool.query("SELECT * FROM users WHERE email = $1",[email])
-    //     //     }
-    //     // }
-    // )
 }
