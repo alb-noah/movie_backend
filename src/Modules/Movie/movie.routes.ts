@@ -6,7 +6,14 @@ import { AdminMovieController }  from './movie.controller.admin'
 export const PublicMovieRoutes = (router: Router, prefix: string) => {
     router.get(`${ prefix }/movies`, PublicMovieController.index)
     router.get(`${ prefix }/movies/:id`, PublicMovieController.show)
+    router.post(
+        `${ prefix }/movies/:id/review`,
+        Multer.none,
+        PublicMovieController.review)
 }
+
+
+
 
 export const AdminMovieRoutes = (router: Router, prefix: string) => {
 
@@ -18,7 +25,7 @@ export const AdminMovieRoutes = (router: Router, prefix: string) => {
             AdminMovieController.index
         )
         .post(
-            Multer.none,
+            Multer.simple('movies'),
             AdminMovieController.store
         )
 

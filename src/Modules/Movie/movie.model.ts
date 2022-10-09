@@ -1,8 +1,9 @@
-import {Model, QueryBuilderType, QueryContext} from 'objection'
+import Objection, {Model, QueryBuilderType, QueryContext, Transaction} from 'objection'
 import {DOMAIN}                                from "../../config"
 import Actor                                   from '../Actor/actor.model'
 import Genre                                   from '../Genre/genre.model'
 import { TimestampedModel }                    from '../Shared/TimestampedModel'
+import {Review} from "../Reviews/review.model";
 
 export default class Movie extends TimestampedModel {
 
@@ -24,39 +25,53 @@ export default class Movie extends TimestampedModel {
     damage_cost!: number
     is_disabled!: boolean
     fulltext!: string
+    avg_rating!: number
 
+
+    actors?: Actor[] | []
+    reviews?: Review[] | []
+    related_movies?: Movie[] | []
     /*
      * ---------------------------------------------------------------------
      * Static methods
      * ---------------------------------------------------------------------
      */
 
-    async $afterGet(qc: QueryContext) {
-
-        this.img = this.img ?
-                   `${DOMAIN}/uploads/movies/${this.img}` :
-                   null
-
-        this.thumb = this.thumb ?
-                     `${DOMAIN}/uploads/movies/thumbs/${this.thumb}` :
-                     null
-
-        return super.$afterGet(qc)
-    }
-
     static jsonSchema = {
         type: 'object',
-        required: ['title'],
+        required: ['title','description'],
         properties: {
-            title: {type: 'string', minLength: 3}
+            title: {type: 'string', minLength: 3},
+            description:{type:'string', minLength:10}
         }
     }
 
+    async $recalculateAvg(trx: Transaction) {
+        let avg_rating = await this
+            .$relatedQuery("reviews", trx)
+            .sum("rate")
+            .count("id")
+            .then((result:any)=>{
+                return result[0].sum / result[0].count
+            })
+        console.log("avg_rating", avg_rating)
+        await this.$query(trx).patch({avg_rating})
+    }
+
+
+    // Formats img and thumb fields when existing model value returns from database
+    $parseDatabaseJson(json: Objection.Pojo): Objection.Pojo {
+        json       = super.$parseDatabaseJson(json);
+        json.img   = json.img != null ? `${DOMAIN}/uploads/movies/${json.img}` : null
+        json.thumb = json.thumb != null ? `${DOMAIN}/uploads/movies/thumbs/${json.thumb}` : null
+        return json
+    }
+
     /*
-     * ---------------------------------------------------------------------
-     * Model Relations
-     * ---------------------------------------------------------------------
-     */
+    * ---------------------------------------------------------------------
+    * Model Relations
+    * ---------------------------------------------------------------------
+    */
     static relationMappings = () => ({
         cast: {
             relation: Model.ManyToManyRelation,
@@ -96,8 +111,39 @@ export default class Movie extends TimestampedModel {
                 to: 'movies.id'
             },
             filter: (qb: QueryBuilderType<Movie>) => qb.select('movies.id', 'movies.title', 'movies.img', 'movies.thumb')
+        },
+
+        reviews: {
+            relation: Model.ManyToManyRelation,
+            modelClass: Review,
+            join: {
+                from: 'movies.id',
+                through: {
+                    from: 'movie_reviews.movie_id',
+                    to: 'movie_reviews.review_id'
+                },
+                to: 'reviews.id'
+            },
         }
     })
+
+    // async $afterGet(qc: QueryContext) {
+    //
+    //     this.img = this.img ?
+    //                `${DOMAIN}/uploads/movies/${this.img}` :
+    //                null
+    //
+    //     this.thumb = this.thumb ?
+    //                  `${DOMAIN}/uploads/movies/thumbs/${this.thumb}` :
+    //                  null
+    //
+    //     return super.$afterGet(qc)
+    // }
+
+
+
+
+
 
     /*
      * ---------------------------------------------------------------------

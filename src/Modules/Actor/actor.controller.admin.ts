@@ -11,9 +11,9 @@ export const AdminActorController = {
         const data = req.body
         const img  = req.file
 
-        console.log(img)
 
         const trx = await Actor.startTransaction()
+
         try {
 
             // store file

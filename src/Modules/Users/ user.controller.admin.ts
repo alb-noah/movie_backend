@@ -1,8 +1,8 @@
-import { NextFunction, Request, Response } from "express"
+import { NextFunction, Request, Response } from 'express'
 import { UtilDatabase }                    from '../../Utils/finder'
-import Actor                               from './actor.model'
+import { User }                            from './user.model'
 
-export const PublicActorController = {
+export const AdminUserController = {
 
     /**
      * ---------------------------------------------------------------------
@@ -11,10 +11,10 @@ export const PublicActorController = {
      */
     index: async (req: Request, res: Response, next: NextFunction) => {
 
-        let query = Actor.query()
+        let query = User.query()
 
         return await UtilDatabase
-            .finder(Actor, req.query, query)
+            .finder(User, req.query, query)
             .then((results) => res.json(results))
             .catch(err => next(err))
     },
@@ -26,12 +26,13 @@ export const PublicActorController = {
      */
     show: async (req: Request, res: Response, next: NextFunction) => {
 
-        await Actor
+        await User
             .query()
             .findById(req.params.id)
-            .withGraphFetched(`[movies]`)
-            .throwIfNotFound({ message: 'Actor not found!' })
-            .then((result: Actor) => res.json(result))
+            .withGraphFetched(`[roles]`)
+            .throwIfNotFound({ message: 'User not found!' })
+            .then((result: User) => res.json(result))
             .catch(err => next(err))
     }
+
 }

@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express"
 import { UtilDatabase }                    from '../../Utils/finder'
-import Genre                               from './genre.model'
+import Reviews                               from './reviews.model'
 
-export const AdminGenreController = {
+export const AdminReviewsController = {
 
     /**
      * ---------------------------------------------------------------------
@@ -11,10 +11,10 @@ export const AdminGenreController = {
      */
     index: async (req: Request, res: Response, next: NextFunction) => {
 
-        let query = Genre.query()
+        let query = Reviews.query()
 
         return await UtilDatabase
-            .finder(Genre, req.query, query)
+            .finder(Reviews, req.query, query)
             .then((results) => res.json(results))
             .catch(err => next(err))
     },
@@ -28,11 +28,11 @@ export const AdminGenreController = {
 
         const { id } = req.params
 
-        return await Genre
+        return await Reviews
             .query()
             .findById(id)
-            .throwIfNotFound({ message: 'Genre not found!' })
-            .then((result: Genre) => res.json(result))
+            .throwIfNotFound({ message: 'هذا التقييم غير موجود!' })
+            .then((result: Reviews) => res.json(result))
             .catch(err => next(err))
     },
 
@@ -40,7 +40,7 @@ export const AdminGenreController = {
 
         const data = req.body
 
-        await Genre
+        await Reviews
             .query()
             .insert(data)
             .then((result) => res.json(result))
@@ -58,10 +58,10 @@ export const AdminGenreController = {
         const data   = req.body
         const { id } = req.params
 
-        await Genre
+        await Reviews
             .query()
             .patchAndFetchById(id, data)
-            .throwIfNotFound({ message: 'Genre not found!' })
+            .throwIfNotFound({ message: 'هذا التقييم غير موجود!' })
             .then((result) => res.json(result))
             .catch(err => next(err))
     },
@@ -74,10 +74,11 @@ export const AdminGenreController = {
     destroy: async (req: Request, res: Response, next: NextFunction) => {
 
         const { id } = req.params
-        await Genre
+
+        await Reviews
             .query()
             .deleteById(id)
-            .throwIfNotFound({ message: 'Genre not found!' })
+            .throwIfNotFound({ message: 'هذا التقييم غير موجود!' })
             .returning('*')
             .then((result) => res.json(result))
             .catch(err => next(err))

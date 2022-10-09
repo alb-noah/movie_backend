@@ -3,13 +3,20 @@ import { errorHandler }                        from '../Middlewares/error.handle
 import { JWT }                                 from '../Middlewares/Jwt'
 import { Locale }                              from '../Middlewares/locale'
 import { AdminActorRoutes, PublicActorRoutes } from '../Modules/Actor/actor.routes'
-import { PublicAuthRoutes }                    from '../Modules/Auth/auth.routs'
+
 import { AdminGenreRoutes, PublicGenreRoutes } from '../Modules/Genre/genre.routes'
 import { AdminMovieRoutes, PublicMovieRoutes } from '../Modules/Movie/movie.routes'
+import {AdminUserRoutes, UserRoutes} from "../Modules/Users/user.routes";
+import {RoleMiddleware} from "../Middlewares/RoleMiddleware";
+import {AdminReviewRoutes} from "../Modules/Reviews/review.routes";
+import {GetStatics} from "./statistics.route";
+import {PublicAuthRoutes} from "../Modules/Auth/auth.routs";
+//import {app} from "../app";
 
 export const applyRoutes = (): Router => {
 
     const router = Router()
+    //app.use("/dashboard", require("./dashboard"));
 
     /**
      * -------------------------------------------------------
@@ -17,6 +24,7 @@ export const applyRoutes = (): Router => {
      * to be registered on the Router
      * -------------------------------------------------------
      * */
+
     // TODO: add (authentication) and locale middlewares here
 
     router.use(Locale)
@@ -29,6 +37,17 @@ export const applyRoutes = (): Router => {
      * */
     const prefix = '/api/v1'
 
+
+    /**
+     * ------------------------------------------------------------------------------
+     *  USER ROUTES
+     * ------------------------------------------------------------------------------
+     */
+    const user_prefix = prefix + '/user' // domain:8000/api/v1/user
+
+    router.use(user_prefix, RoleMiddleware(["user"]))
+    UserRoutes(router, user_prefix)
+
     /**
      * ------------------------------------------------------------------------------
      *  ADMIN ROUTES
@@ -36,23 +55,21 @@ export const applyRoutes = (): Router => {
      */
     const admin_prefix = prefix + '/admin' // domain:8000/api/v1/admin
     // TODO: lock this route behind a Role Middleware (authorization)
-
+    router.use(admin_prefix, RoleMiddleware(["admin"]))
+    AdminUserRoutes(router, admin_prefix)
     AdminActorRoutes(router, admin_prefix)
     AdminGenreRoutes(router, admin_prefix)
     AdminMovieRoutes(router, admin_prefix)
+    AdminReviewRoutes(router, admin_prefix)
 
+
+    router.get(`${admin_prefix}/statistics`, GetStatics)
     /**
      * ------------------------------------------------------------------------------
      *  PUBLIC ROUTES
      * ------------------------------------------------------------------------------
      */
     // domain:8000/api/v1
-    const actors_prefix = prefix + '/actors'
-    const genre_prefix = prefix + '/genre'
-    const  movies_prefix = prefix + '/movies'
-    const login_prefix = prefix + '/login'
-    const  web_login_prefix = prefix + '/web-login'
-    const register_prefix = prefix + '/register'
 
 
     // insert any public middlewares above this line
@@ -60,8 +77,8 @@ export const applyRoutes = (): Router => {
     PublicGenreRoutes(router, prefix)
     PublicMovieRoutes(router, prefix)
     PublicAuthRoutes(router, prefix)
-    PublicAuthRoutes(router, prefix)
-    PublicAuthRoutes(router, prefix)
+
+
 
     /**
      * ------------------------------------------------------------------------------
@@ -69,6 +86,6 @@ export const applyRoutes = (): Router => {
      * ------------------------------------------------------------------------------
      * */
     router.use(errorHandler)
-    module.exports = router;
+    // module.exports = router;
     return router
 }

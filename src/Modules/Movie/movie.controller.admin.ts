@@ -1,6 +1,9 @@
 import { NextFunction, Request, Response } from "express"
 import { UtilDatabase }                    from '../../Utils/finder'
 import Movie                               from './movie.model'
+import path from "path";
+import {UPLOADS_PATH} from "../../config";
+import {unlink} from "node:fs/promises";
 
 export const AdminMovieController = {
     /**
@@ -48,12 +51,39 @@ export const AdminMovieController = {
     store: async (req: Request, res: Response, next: NextFunction) => {
 
         const data = req.body
+        const img  = req.file
 
-        await Movie
-            .query()
-            .insert(data)
-            .then((result) => res.json(result))
-            .catch(err => next(err))
+        console.log(img)
+
+        if (img) {
+            data.img = img.filename
+        }
+
+        const trx = await Movie.startTransaction()
+
+        try {
+            if (img) {
+                data.img = img.filename
+            }
+            await Movie
+                .query(trx)
+                .insert(data)
+                .returning('*')
+                .then((result) => res.json(result))
+                .catch(err => next(err))
+
+            await trx.commit()
+        } catch (err){
+            if (img) {
+                const img_path = path.resolve(UPLOADS_PATH, 'movies', img.filename)
+                await unlink(img_path);
+
+                console.log(`successfully deleted ${ img_path }`);
+            }
+
+            await trx.rollback()
+            return next(err)
+        }
 
     },
 

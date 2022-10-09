@@ -2,9 +2,11 @@ import { knex }                   from '../../../knexfile'
 import * as bcrypt                        from 'bcryptjs'
 import Objection, { Model, QueryContext } from 'objection'
 import * as jsonwebtoken                  from "jsonwebtoken"
-import { JWT_EXPIRY, JWT_SECRET } from '../../config'
+import {DOMAIN, JWT_EXPIRY, JWT_SECRET} from '../../config'
 import Role                       from '../Role/role.model'
 import { TimestampedModel }       from '../Shared/TimestampedModel'
+import {Review} from "../Reviews/review.model";
+import Movie from "../Movie/movie.model";
 
 export class User extends TimestampedModel {
 
@@ -15,8 +17,34 @@ export class User extends TimestampedModel {
     email!: string
     phone!: string | null
     password!: string | null
+    is_disabled:boolean
+    img!: string| null
+    birthdate!: Date | string | null
 
-    roles?: Role[] | []
+    roles!: Role[] | string[] | []
+    reviews? : Review[] | []
+
+    static jsonSchema = {
+        type: 'object',
+        anyOf: [
+            {
+                required: ['name']
+            },
+            {
+                required: ['email', 'password']
+            }
+        ],
+        properties: {
+            name: { type: 'string', minLength: 3, maxLength: 255 },
+            email: { type: 'string', maxLength: 255, pattern: "^\\S+@\\S+\\.\\S+$" }, // a@c.c
+            phone: { type: 'string', minLength: 9, maxLength: 12 },
+            password: { type: 'string', minLength: 8, maxLength: 32 },
+            birthdate: { type: 'string' },
+            is_disabled: { type: 'boolean'},
+            img: { type: 'string', maxLength: 255 },
+        }
+    }
+
 
     /*
      * ---------------------------------------------------------------------
@@ -78,7 +106,7 @@ export class User extends TimestampedModel {
     // Removes password when EXISTING model value returns from database
     $parseDatabaseJson(json: Objection.Pojo): Objection.Pojo {
         json = super.$parseDatabaseJson(json);
-
+        json.img   = json.img != null ? `${DOMAIN}/uploads/users/${json.img}` : null
         if ('password' in json)
             delete json.password
 
@@ -112,6 +140,27 @@ export class User extends TimestampedModel {
                 },
                 to: 'roles.id'
             }
+        },
+        reviews: {
+            relation: Model.ManyToManyRelation,
+            modelClass: Review,
+            join: {
+                from: 'users.id',
+                to: 'reviews.user_id'
+            }
+        },
+
+        favourite: {
+            relation: Model.ManyToManyRelation,
+            modelClass: Movie,
+            join: {
+                from: 'users.id',
+                through: {
+                    from: 'favourite.user_id',
+                    to: 'favourite.movie_id'
+                },
+                to: 'movies.id'
+            },
         }
     })
 }

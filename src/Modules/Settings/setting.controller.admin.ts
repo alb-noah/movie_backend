@@ -1,8 +1,11 @@
-import { NextFunction, Request, Response } from "express"
-import { UtilDatabase }                    from '../../Utils/finder'
-import Genre                               from './genre.model'
+import { NextFunction, Request, Response } from 'express'
+import path                                from 'path'
+import { UPLOADS_PATH }                    from '../../config'
+import Setting                               from './setting.model'
+import { unlink }                          from 'node:fs/promises';
+import { UtilDatabase } from '../../Utils/finder';
 
-export const AdminGenreController = {
+export const AdminSettingController = {
 
     /**
      * ---------------------------------------------------------------------
@@ -11,10 +14,10 @@ export const AdminGenreController = {
      */
     index: async (req: Request, res: Response, next: NextFunction) => {
 
-        let query = Genre.query()
+        let query = Setting.query()
 
         return await UtilDatabase
-            .finder(Genre, req.query, query)
+            .finder(Setting, req.query, query)
             .then((results) => res.json(results))
             .catch(err => next(err))
     },
@@ -28,19 +31,19 @@ export const AdminGenreController = {
 
         const { id } = req.params
 
-        return await Genre
+        return await Setting
             .query()
             .findById(id)
-            .throwIfNotFound({ message: 'Genre not found!' })
-            .then((result: Genre) => res.json(result))
+            .throwIfNotFound({ message: 'Setting not found!' })
+            .then((result: Setting) => res.json(result))
             .catch(err => next(err))
     },
 
     store: async (req: Request, res: Response, next: NextFunction) => {
 
         const data = req.body
-
-        await Genre
+        console.log(data);
+        await Setting
             .query()
             .insert(data)
             .then((result) => res.json(result))
@@ -58,10 +61,10 @@ export const AdminGenreController = {
         const data   = req.body
         const { id } = req.params
 
-        await Genre
+        await Setting
             .query()
             .patchAndFetchById(id, data)
-            .throwIfNotFound({ message: 'Genre not found!' })
+            .throwIfNotFound({ message: 'Setting not found!' })
             .then((result) => res.json(result))
             .catch(err => next(err))
     },
@@ -74,10 +77,11 @@ export const AdminGenreController = {
     destroy: async (req: Request, res: Response, next: NextFunction) => {
 
         const { id } = req.params
-        await Genre
+
+        await Setting
             .query()
             .deleteById(id)
-            .throwIfNotFound({ message: 'Genre not found!' })
+            .throwIfNotFound({ message: 'Setting not found!' })
             .returning('*')
             .then((result) => res.json(result))
             .catch(err => next(err))

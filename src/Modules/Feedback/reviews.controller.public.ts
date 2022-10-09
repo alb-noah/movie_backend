@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express"
 import { UtilDatabase }                    from '../../Utils/finder'
-import Actor                               from './actor.model'
+import Reviews                               from './reviews.model'
 
-export const PublicActorController = {
+export const PublicReviewsController = {
 
     /**
      * ---------------------------------------------------------------------
@@ -11,12 +11,23 @@ export const PublicActorController = {
      */
     index: async (req: Request, res: Response, next: NextFunction) => {
 
-        let query = Actor.query()
+        let query = Reviews.query()
 
         return await UtilDatabase
-            .finder(Actor, req.query, query)
+            .finder(Reviews, req.query, query)
             .then((results) => res.json(results))
             .catch(err => next(err))
+    },
+    store: async (req: Request, res: Response, next: NextFunction) => {
+
+        const data = req.body
+
+        await Reviews
+            .query()
+            .insert(data)
+            .then((result) => res.json(result))
+            .catch(err => next(err))
+
     },
 
     /**
@@ -26,12 +37,13 @@ export const PublicActorController = {
      */
     show: async (req: Request, res: Response, next: NextFunction) => {
 
-        await Actor
+        const { id } = req.params
+
+        return await Reviews
             .query()
-            .findById(req.params.id)
-            .withGraphFetched(`[movies]`)
-            .throwIfNotFound({ message: 'Actor not found!' })
-            .then((result: Actor) => res.json(result))
+            .findById(id)
+            .throwIfNotFound({ message: 'Review not found!' })
+            .then((result: Reviews) => res.json(result))
             .catch(err => next(err))
     }
 }

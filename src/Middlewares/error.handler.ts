@@ -15,6 +15,13 @@ import {
 export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
     if (err instanceof ValidationError) {
         switch (err.type) {
+            case 'UnauthorizedAccess':
+                res.status(403).send({
+                    message: err.message,
+                    type: err.type,
+                    data: err.data
+                });
+                break;
             case 'ModelValidation':
                 res.status(400).send({
                     message: err.message,
