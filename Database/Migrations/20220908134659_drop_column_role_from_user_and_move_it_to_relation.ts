@@ -21,16 +21,20 @@ export async function up(knex: Knex): Promise<void> {
         .whereNotNull('role')
         .select('id', 'role')
 
-    let userRolesArr: UserRoleType[] = []
 
-    for (let user of users) {
-        userRolesArr.push({
-            user_id: user.id,
-            role_id: user.role === "admin" ? 1 : 2
-        })
+
+    if (users.length > 0){
+        let userRolesArr:UserRoleType[] = []
+
+        for (let user of users) {
+            userRolesArr.push({
+                user_id: user.id,
+                role_id: user.role === "admin" ? 1 : 2
+            })
+        }
+        await knex('user_roles').insert(userRolesArr)
     }
 
-    await knex('user_roles').insert(userRolesArr)
 
     return knex.schema.alterTable('users', (table) => {
         table.dropColumn('role')
@@ -51,11 +55,13 @@ export async function down(knex: Knex): Promise<void> {
                 "roles.name as role_name"
             )
 
-        for (let user of users) {
-            await knex("users")
-                .where('id', user.id)
-                .first()
-                .update({ role: user.role_name })
+         if(users.length > 0){
+            for (let user of users) {
+                await knex("users")
+                    .where('id', user.id)
+                    .first()
+                    .update({ role: user.role_name })
+            }
         }
     })
 }

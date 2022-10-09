@@ -6,7 +6,7 @@ export async function up(knex: Knex): Promise<void> {
     return knex.schema.createTable(table_name, (table) => {
         table.increments('id', {primaryKey: true})
         table.string('name').nullable()
-        table.text('description').nullable()
+      //  table.text('description').nullable()
         table.string('img').nullable()
         table.string('thumb').nullable()
         table.timestamp('created_at', {useTz: false}).defaultTo(knex.raw('now()')).notNullable()
