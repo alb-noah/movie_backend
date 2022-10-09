@@ -27,6 +27,5 @@ import {DB} from "./src/config"
         timestampFilenamePrefix: true
     }
 }
-
 export const knex = Knex(config);
 module.exports = config
